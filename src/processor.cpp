@@ -14,15 +14,17 @@ float Processor::Utilization() {
   // utilization
   std::ifstream cpufilestream;
   cpufilestream.open(LinuxParser::kProcDirectory + LinuxParser::kStatFilename);
-  std::string cpu;
-  cpufilestream >> cpu >> user >> nice >> system >> idle >> iowait >> irq >>
+  std::string cpu, line;
+  getline(cpufilestream,line);
+  std::istringstream cpulinestream(line);
+  cpulinestream >> cpu >> user >> nice >> system >> idle >> iowait >> irq >>
       softirq >> steal >> guest >> guest_nice;
   cpufilestream.close();
-  long idletotal = idle + iowait;
-  long nonidle = user + nice + system + irq + softirq + steal;
-  long total = idletotal + nonidle;
-  long totald = total - prevtotal;
-  long idled = idletotal - previdletotal;
+  float idletotal = idle + iowait;
+  float nonidle = user + nice + system + irq + softirq + steal;
+  float total = idletotal + nonidle;
+  float totald = total - prevtotal;
+  float idled = idletotal - previdletotal;
   cpu_percent = (totald - idled) / totald;
 
   // set previous value to current value for next time the function is called
