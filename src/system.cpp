@@ -33,24 +33,21 @@ vector<Process>& System::Processes() {
   // process: pid, user, cpu, ram, uptime, command
   // container composed of cpu, user, pid, RAM, and uptime
   vector<int> process_ids = LinuxParser::Pids();
-  for (int &i : process_ids) {
+  
+  for (int i : process_ids) {
+
     Process newprocesses(i);
+    //std::cout<<newprocesses.CpuUtilization() << std::endl;
     processes_.emplace_back(newprocesses);
+
+    //this is the part I don't know how to sort
+  
   }
-  // int k = 0;
-  // for (int j = 0; j < process_ids.size(); ++j){
-  //   float val = processes_[1].getCpu();
-  //   int index = j;
-  //   while(index >0 && processes_[index-1].getCpu()){
-  //     processes_[index] = processes_[index-1];
-  //   }
-  //   if(processes_[j].getCpu() < processes_[k].getCpu()){
-      
-  //   }
-  // }
- 
+
+  
   return processes_;
 }
+
 
 std::string System::Kernel() { return LinuxParser::Kernel(); }
 

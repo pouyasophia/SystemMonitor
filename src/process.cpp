@@ -82,9 +82,11 @@ long int Process::UpTime() { return uptime_; }
 // REMOVE: [[maybe_unused]] once you define the function
 // sort by most ram or most cpu utilization
 bool Process::operator<(Process const& a) const {
+  //this is supposed to be the sorting operator but idk how to use it
   if (cpu_ < a.cpu_) {
     return true;
   } else {
     return false;
   };
 }
+  
