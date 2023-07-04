@@ -7,7 +7,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-namespace fs = std::filesystem;
 
 #include "format.h"
 #include "linux_parser.h"
@@ -17,7 +16,6 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-// DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
   string line;
   string key;
@@ -40,7 +38,6 @@ string LinuxParser::OperatingSystem() {
   return value;
 }
 
-// DONE: An example of how to read data from the filesystem
 string LinuxParser::Kernel() {
   string os, kernel, version;
   string line;
@@ -53,15 +50,12 @@ string LinuxParser::Kernel() {
   return kernel;
 }
 
-// BONUS: Update this to use std::filesystem
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
-  DIR* directory = opendir(kProcDirectory.c_str());
-  struct dirent* file;
+  DIR *directory = opendir(kProcDirectory.c_str());
+  struct dirent *file;
   while ((file = readdir(directory)) != nullptr) {
-    // Is this a directory?
     if (file->d_type == DT_DIR) {
-      // Is every character of the name a digit?
       string filename(file->d_name);
       if (std::all_of(filename.begin(), filename.end(), isdigit)) {
         int pid = stoi(filename);
@@ -73,7 +67,6 @@ vector<int> LinuxParser::Pids() {
   return pids;
 };
 
-// TODO: Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() {
   std::ifstream MUFileStream(kProcDirectory + kMeminfoFilename);
   string line, name;
@@ -105,22 +98,6 @@ long LinuxParser::UpTime() {
   return time_system;
 }
 
-// TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
-
-// TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid [[maybe_unused]]) { return 0; }
-
-// TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
-
-// TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
-
-// TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
-
 int LinuxParser::TotalProcesses() {
   std::ifstream TPFileStream(kProcDirectory + kStatFilename);
   string line, key;
@@ -135,7 +112,8 @@ int LinuxParser::TotalProcesses() {
         break;
       }
     }
-  } return value;
+  }
+  return value;
 }
 
 int LinuxParser::RunningProcesses() {
@@ -152,11 +130,10 @@ int LinuxParser::RunningProcesses() {
         break;
       }
     }
-  } return value;
+  }
+  return value;
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid) {
   std::string command;
   std::ifstream commandfilestream(kProcDirectory + to_string(pid) + "/" +
@@ -166,12 +143,9 @@ string LinuxParser::Command(int pid) {
     return command;
   }
   commandfilestream.close();
-
   return command;
 }
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Ram(int pid) {
   std::string mem_used, line, mem, unit;
   std::ifstream memfilestream(kProcDirectory + to_string(pid) + "/" +
@@ -202,8 +176,6 @@ string LinuxParser::Uid(int pid) {
   return uid_number;
 }
 
-// TODO: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::User(int pid) {
   std::string ref;
   ref = LinuxParser::Uid(pid);
@@ -244,8 +216,6 @@ string LinuxParser::User(int pid) {
   return uname_correct;
 }
 
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::UpTime(int pid) {
   std::ifstream uptimestream(kProcDirectory + std::to_string(pid) + "/" +
                              kStatFilename);
@@ -269,5 +239,4 @@ long LinuxParser::UpTime(int pid) {
   }
   time_sec = clockticks / sysconf(_SC_CLK_TCK);
   return time_sec;
-  // Format::ElapsedTime?? should I return string here?
 }
