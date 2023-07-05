@@ -156,6 +156,8 @@ string LinuxParser::Ram(int pid) {
       if (line.find("VmSize:") != string::npos) {
         std::istringstream memlinestream(line);
         memlinestream >> mem >> mem_used;
+        //KB -> MB
+        mem_used = to_string(stol(mem_used)/1000);
         break;
       }
     }

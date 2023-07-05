@@ -59,7 +59,7 @@ float Process::CpuUtilization() {
 
   float total_time = utime + stime + cutime + cstime;
   float seconds = sys_uptime - (starttime / (sysconf(_SC_CLK_TCK)));
-  cpu_percent = 100 * ((total_time / (sysconf(_SC_CLK_TCK))) / seconds);
+  cpu_percent = ((total_time / (sysconf(_SC_CLK_TCK))) / seconds);
   return cpu_percent;
 }
 
