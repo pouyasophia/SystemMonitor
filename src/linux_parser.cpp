@@ -147,7 +147,8 @@ string LinuxParser::Command(int pid) {
 }
 
 string LinuxParser::Ram(int pid) {
-  std::string mem_used, line, mem, unit;
+  std::string mem_used = "0";
+  std::string line, mem, unit;
   std::ifstream memfilestream(kProcDirectory + to_string(pid) + "/" +
                               kStatusFilename);
   if (memfilestream.is_open())
