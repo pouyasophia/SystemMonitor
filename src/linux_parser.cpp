@@ -28,7 +28,7 @@ string LinuxParser::OperatingSystem() {
       std::replace(line.begin(), line.end(), '"', ' ');
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
-        if (key == "PRETTY_NAME") {
+        if (key == osName) {
           std::replace(value.begin(), value.end(), '_', ' ');
           return value;
         }
@@ -68,24 +68,10 @@ vector<int> LinuxParser::Pids() {
 };
 
 float LinuxParser::MemoryUtilization() {
-  std::ifstream MUFileStream(kProcDirectory + kMeminfoFilename);
-  string line, name;
-  float value, memtotal, memfree;
-  if (MUFileStream.is_open()) {
-    while (std::getline(MUFileStream, line)) {
-      if (line.find("MemTotal") != string::npos) {
-        std::istringstream MULineStream(line);
-        MULineStream >> name >> value;
-        memtotal = value;
-      }
-      if (line.find("MemFree") != string::npos) {
-        std::istringstream MULineStream(line);
-        MULineStream >> name >> value;
-        memfree = value;
-      }
-    }
-  }
-  return (memtotal - memfree) / memtotal;
+
+  float memTotal = findValueByKey<float>(kMeminfoFilename, memTotalKey);
+  float memFree = findValueByKey<float>(kMeminfoFilename, memFreeKey);
+  return (memTotal - memFree) / memTotal;
 }
 
 long LinuxParser::UpTime() {
@@ -99,39 +85,14 @@ long LinuxParser::UpTime() {
 }
 
 int LinuxParser::TotalProcesses() {
-  std::ifstream TPFileStream(kProcDirectory + kStatFilename);
-  string line, key;
-  int value;
-
-  if (TPFileStream.is_open()) {
-    while (std::getline(TPFileStream, line)) {
-      if (line.find("processes") != string::npos) {
-        std::istringstream TPLineStream(line);
-        TPLineStream >> key >> value;
-        return value;
-        break;
-      }
-    }
-  }
-  return value;
+  int totalProcesses = findValueByKey<int>(kStatFilename, processes);
+  return totalProcesses;
 }
 
 int LinuxParser::RunningProcesses() {
-  std::ifstream PRFileStream(kProcDirectory + kStatFilename);
-  string line, key;
-  int value;
 
-  if (PRFileStream.is_open()) {
-    while (std::getline(PRFileStream, line)) {
-      if (line.find("procs_running") != string::npos) {
-        std::istringstream PRLineStream(line);
-        PRLineStream >> key >> value;
-        return value;
-        break;
-      }
-    }
-  }
-  return value;
+  int runningNumber = findValueByKey<int>(kStatFilename, procsRunning);
+  return runningNumber;
 }
 
 string LinuxParser::Command(int pid) {
@@ -140,6 +101,10 @@ string LinuxParser::Command(int pid) {
                                   kCmdlineFilename);
   if (commandfilestream.is_open()) {
     std::getline(commandfilestream, command);
+    if (command.length() > 40){
+      command.erase(command.begin() + 40,command.end());
+      command.append("...");
+    }
     return command;
   }
   commandfilestream.close();
@@ -147,36 +112,19 @@ string LinuxParser::Command(int pid) {
 }
 
 string LinuxParser::Ram(int pid) {
-  std::string mem_used = "0";
-  std::string line, mem, unit;
-  std::ifstream memfilestream(kProcDirectory + to_string(pid) + "/" +
-                              kStatusFilename);
-  if (memfilestream.is_open())
-    while (std::getline(memfilestream, line)) {
-      if (line.find("VmSize:") != string::npos) {
-        std::istringstream memlinestream(line);
-        memlinestream >> mem >> mem_used;
-        //KB -> MB
-        mem_used = to_string(stol(mem_used)/1000);
-        break;
-      }
-    }
-  return mem_used;
+  std::string memUsed = "0";
+  long tempMem = findValueByKey<long>(to_string(pid) + "/" + kStatusFilename, vmRss);
+  if (tempMem > 0){
+    memUsed = to_string(tempMem/1000);
+  };
+  return memUsed;
+  
 }
 
 string LinuxParser::Uid(int pid) {
-  std::string uid, uid_number, line;
-  std::ifstream uidfilestream(kProcDirectory + to_string(pid) + "/" +
-                              kStatusFilename);
-  if (uidfilestream.is_open())
-    while (std::getline(uidfilestream, line)) {
-      if (line.find("Uid:") != string::npos) {
-        std::istringstream uidlinestream(line);
-        uidlinestream >> uid >> uid_number;
-        break;
-      }
-    }
-  return uid_number;
+  
+  std::string uidNumber = findValueByKey<std::string>(to_string(pid) + "/" + kStatusFilename, uid);
+  return uidNumber;
 }
 
 string LinuxParser::User(int pid) {

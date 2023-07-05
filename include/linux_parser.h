@@ -16,6 +16,15 @@ const std::string kMeminfoFilename{"/meminfo"};
 const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
+const std::string osName("PRETTY_NAME");
+const std::string memTotalKey("MemTotal");
+const std::string memFreeKey("MemFree");
+const std::string processes("processes");
+const std::string procsRunning("procs_running");
+//exact physical memory as opposed to virtual memory size (VmSize)
+const std::string vmRss("VmRSS:");
+const std::string uid("Uid:");
+
 
 float MemoryUtilization();
 long UpTime();
@@ -43,6 +52,24 @@ std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
+
+template <typename T>
+T findValueByKey(std::string const &fileName, std::string const &keyName) {
+  std::string line, key;
+  T value;
+  std::ifstream stream(kProcDirectory + fileName);
+  if(stream.is_open()) {
+    while(std::getline(stream, line)){
+     if(line.find(keyName) != std::string::npos){
+      std::istringstream linestream(line);
+      linestream >> key >> value;
+      return value;
+     }
+    }
+  }
+  return value;
+};
+
 }; // namespace LinuxParser
 
 #endif

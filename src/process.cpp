@@ -72,10 +72,5 @@ string Process::User() { return user_; }
 long int Process::UpTime() { return uptime_; }
 
 bool Process::operator<(Process const &a) const {
-  if (stol(ram_) > stol(a.ram_)) {
-    return true;
-  } 
-  else {
-    return false;
-  };
+  return (stol(ram_) > stol(a.ram_));
 }
