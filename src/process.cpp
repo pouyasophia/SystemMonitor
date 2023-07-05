@@ -34,7 +34,7 @@ float Process::CpuUtilization() {
 
   float utime, stime, cutime, cstime, starttime;
   bool exit = false;
-  float sys_uptime = LinuxParser::UpTime();
+  float sys_uptime = Process::UpTime();
 
   int j = 0;
   while (std::getline(uptimestream, line, ' ') && !exit) {

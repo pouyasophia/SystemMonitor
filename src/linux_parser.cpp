@@ -113,7 +113,8 @@ string LinuxParser::Command(int pid) {
 
 string LinuxParser::Ram(int pid) {
   std::string memUsed = "0";
-  long tempMem = findValueByKey<long>(to_string(pid) + "/" + kStatusFilename, vmRss);
+  long tempMem = 0;
+  tempMem = findValueByKey<long>(to_string(pid) + "/" + kStatusFilename, vmRss);
   if (tempMem > 0){
     memUsed = to_string(tempMem/1000);
   };
