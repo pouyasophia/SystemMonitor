@@ -188,7 +188,7 @@ string LinuxParser::User(int pid) {
       std::string user_name, x, uid;
 
       int j = 0;
-      for (int i = 0; i < line.length(); ++i) {
+      for (unsigned int i = 0; i < line.length(); ++i) {
         if (line[i] == ':') {
           j++;
           i++;
@@ -224,7 +224,7 @@ long LinuxParser::UpTime(int pid) {
   bool exit = false;
   int j = 0;
   while (std::getline(uptimestream, line) && !exit) {
-    for (int i = 0; i < line.length(); ++i) {
+    for (unsigned int i = 0; i < line.length(); ++i) {
       if (line[i] == ' ') {
         ++j;
       }
