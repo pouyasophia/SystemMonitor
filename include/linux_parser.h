@@ -56,7 +56,7 @@ long int UpTime(int pid);
 template <typename T>
 T findValueByKey(std::string const &fileName, std::string const &keyName) {
   std::string line, key;
-  T value;
+  T value = T();
   std::ifstream stream(kProcDirectory + fileName);
   if(stream.is_open()) {
     while(std::getline(stream, line)){

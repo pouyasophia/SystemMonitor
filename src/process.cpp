@@ -18,7 +18,7 @@ Process::Process(int pid) {
   user_ = LinuxParser::User(pid_);
   cpu_ = CpuUtilization();
   ram_ = LinuxParser::Ram(pid_);
-  uptime_ = LinuxParser::UpTime(pid_);
+  uptime_ = Process::UpTime();
   command_ = LinuxParser::Command(pid_);
 }
 
@@ -34,7 +34,7 @@ float Process::CpuUtilization() {
 
   float utime, stime, cutime, cstime, starttime;
   bool exit = false;
-  float sys_uptime = Process::UpTime();
+  float sys_uptime = LinuxParser::UpTime();
 
   int j = 0;
   while (std::getline(uptimestream, line, ' ') && !exit) {
@@ -59,6 +59,7 @@ float Process::CpuUtilization() {
 
   float total_time = utime + stime + cutime + cstime;
   float seconds = sys_uptime - (starttime / (sysconf(_SC_CLK_TCK)));
+  uptime_ = seconds;
   cpu_percent = ((total_time / (sysconf(_SC_CLK_TCK))) / seconds);
   return cpu_percent;
 }
@@ -69,7 +70,10 @@ string Process::Ram() { return ram_; }
 
 string Process::User() { return user_; }
 
-long int Process::UpTime() { return uptime_; }
+long int Process::UpTime() 
+{ 
+  return uptime_; 
+}
 
 bool Process::operator<(Process const &a) const {
   return (stol(ram_) > stol(a.ram_));
